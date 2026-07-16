@@ -4,6 +4,13 @@ import com.localservice.marketplace.entity.ProviderProfile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 @Repository
 public interface ProviderProfileRepository extends JpaRepository<ProviderProfile, Long> {
+
+    List<ProviderProfile> findByAvgRatingGreaterThanEqual(BigDecimal rating);
+
+    List<ProviderProfile> findByIsVerifiedTrue();
 }
