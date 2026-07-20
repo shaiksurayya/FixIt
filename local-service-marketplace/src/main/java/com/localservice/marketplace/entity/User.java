@@ -49,13 +49,14 @@ public class User {
     private String password;
 
     @NotBlank(message = "Phone number is required")
-    @Column(name = "phone", nullable = false, length = 10)
+    @Column(name = "phone", nullable = false, length = 15)
     private String phone;
 
     @NotNull(message = "Role is required")
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
-    private Role role;
+@Enumerated(EnumType.STRING)
+@Column(name = "role", nullable = false)
+@Builder.Default
+private Role role = Role.CUSTOMER;
 
     @Column(name = "address")
     private String address;
