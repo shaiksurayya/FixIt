@@ -3,11 +3,50 @@ import { useNavigate } from 'react-router-dom'
 export default function CustomerLogin() {
   const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    // TODO: call authService.loginCustomer(email, password) once the backend is ready
-    console.log('customer login submitted')
+ const handleSubmit = async (e) => {
+  e.preventDefault()
+
+  const email = e.target[0].value
+  const password = e.target[1].value
+
+  try {
+    const response = await fetch("http://localhost:8080/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
+    })
+
+    if (!response.ok) {
+      alert("Invalid credentials")
+      return
+    }
+
+   const data = await response.json()
+
+console.log("Login Response:", data)
+
+localStorage.setItem("token", data.token)
+
+const user = {
+  id: data.userId,
+  name: data.name,
+  email: data.email,
+  role: data.role,
+}
+
+localStorage.setItem("user", JSON.stringify(user))
+
+navigate("/dashboard/customer")
+  } catch (err) {
+    console.error(err)
+    alert("Login failed")
   }
+}
 
   return (
     <div className="min-h-screen bg-primaryLight flex items-center justify-center px-6 font-body text-ink">
