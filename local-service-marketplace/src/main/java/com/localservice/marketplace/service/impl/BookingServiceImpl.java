@@ -14,6 +14,7 @@ import com.localservice.marketplace.service.BookingService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 @Service
@@ -88,13 +89,27 @@ public class BookingServiceImpl implements BookingService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public List<BookingResponseDTO> getBookingsByProvider(Long providerId) {
-        return bookingRepository.findByProvider_ProviderId(providerId)
-                .stream()
-                .map(this::mapToResponseDTO)
-                .collect(Collectors.toList());
+   @Override
+public List<BookingResponseDTO> getBookingsByProvider(Long providerId) {
+
+    List<Booking> bookings = bookingRepository.findByProvider_ProviderId(providerId);
+
+    LocalDate today = LocalDate.now();
+
+    for (Booking booking : bookings) {
+
+        if (booking.getStatus() == BookingStatus.ACCEPTED &&
+                booking.getBookingDate().isBefore(today)) {
+
+            booking.setStatus(BookingStatus.COMPLETED);
+            bookingRepository.save(booking);
+        }
     }
+
+    return bookings.stream()
+            .map(this::mapToResponseDTO)
+            .collect(Collectors.toList());
+}
 
     @Override
     public List<BookingResponseDTO> getBookingsByStatus(BookingStatus status) {
